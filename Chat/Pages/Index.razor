@@ -1,7 +1,77 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager NavigationManager
+@implements IAsyncDisposable
 
-<h1>Hello, world!</h1>
+<div class="element" id="header">
+    <div id="cont-header">
+        <div>
+            <input @bind="nombre" id="nombre" class="form-control" placeholder="Nombre" />
+        </div>
+        <div>
+            @if (EstaConectado)
+            {
+                <div class="form-inline" id="estado">
+                    <div id="online" class="rounded-circle"></div>
+                    <text>Online</text>
+                </div>
+            }
+            else
+            {
+                <div class="form-inline" id="estado">
+                    <div id="offline" class="rounded-circle"></div>
+                        <text>Offline</text>
+                </div>
+            }
+        </div>
+    </div>
+</div>
 
-Welcome to your new app.
+<ul id="mensajes">
+    @foreach (var mensaje in mensajes)
+    {
+        <li>@mensaje</li>
+    }
+</ul>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<div class="element" id="footer">
+    <div class="form-inline">
+        <input @bind="mensaje" id="mensaje" class="form-control" placeholder="Escriba un mensaje..." />
+        <button @onclick="Enviar" id="enviar" disabled="@(!EstaConectado)">Enviar</button>
+    </div>
+</div>
+
+@code {
+    private string nombre;
+    private string mensaje;
+
+    private HubConnection conexionHub;
+    private List<string> mensajes = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        conexionHub = new HubConnectionBuilder()
+        .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
+        .Build();
+
+        conexionHub.On<string, string, DateTime>("ReceiveMessage", (nombre, mensaje, hora) =>
+        {
+            var nuevoMsj = $"{hora} {nombre}: {mensaje}";
+            mensajes.Add(nuevoMsj);
+            StateHasChanged();
+        });
+
+        await conexionHub.StartAsync();
+    }
+
+    Task Enviar() =>
+        conexionHub.SendAsync("SendMessage", nombre, mensaje, DateTime.Now);
+
+    public bool EstaConectado =>
+        conexionHub.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        await conexionHub.DisposeAsync();
+    }
+}
