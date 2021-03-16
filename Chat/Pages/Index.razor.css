@@ -3,9 +3,10 @@
     top: 1px;
     left: 0;
     width: 100%;
-    background-color: black;
+    background-color: rgb(0,0,0,0.6);
     color: white;
-    padding:0.5rem;
+    padding: 0.5rem;
+    border-bottom-color: darkslategrey
 }
 
 #cont-header {
@@ -14,12 +15,12 @@
 }
 
 #nombre {
-    margin-left: 10px;
-    background-color:inherit;
+    padding-top: 0.5rem;
+    padding-left: 0.5rem;
 }
 
 #estado {
-    padding-top:0.5rem;
+    padding-top: 0.5rem;
     padding-right: 0.5rem;
 }
 
@@ -38,24 +39,62 @@
 }
 
 #mensajes {
-    margin-top: 4rem;
+    margin-top: 3rem;
+    color: white;
+}
+
+#emisor {
+    background-color: darkviolet;
+    border-radius: 20px;
+    overflow-wrap: break-word;
+    width: 40%;
+    margin-left:60%;
+}
+
+#p-emisor {
+    margin-left: 1rem;
+    margin-top: 0.5rem;
+    text-align: left;
+}
+
+#receptores {
+    background-color: mediumblue;
+    border-radius: 20px;
+    overflow-wrap: break-word;
+    width: 40%;
+    margin-right: 60%;
+}
+
+#p-receptores {
+    margin-right: 1rem;
+    margin-top: 0.5rem;
+    text-align: right;
 }
 
 #footer {
     position: fixed;
-    bottom: 5px;
+    bottom: 3px;
     left: 0;
     width: 100%;
     background-color: inherit;
+    padding: 0.7rem;
+    background-color: rgb(0,0,0,0.6);
+    color: white;
 }
 
 #mensaje {
-    width: 80%;
+    width: 85%;
     border-radius: 30px;
+    background-color: inherit;
+    color: white;
+}
+
+#mensaje:hover{
+    background-color:rgb(0,0,0,0.5);
 }
 
 #enviar {
     margin-left: 1rem;
     border-radius: 30px;
-    width: 15%;
+    width: 10%;
 }

@@ -1,12 +1,13 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JS
 @implements IAsyncDisposable
 
 <div class="element" id="header">
     <div id="cont-header">
         <div>
-            <input @bind="nombre" id="nombre" class="form-control" placeholder="Nombre" />
+            <label id="nombre"><b>@nombre</b></label>
         </div>
         <div>
             @if (EstaConectado)
@@ -20,24 +21,42 @@
             {
                 <div class="form-inline" id="estado">
                     <div id="offline" class="rounded-circle"></div>
-                        <text>Offline</text>
+                    <text>Offline</text>
                 </div>
             }
         </div>
     </div>
 </div>
 
-<ul id="mensajes">
+<div id="mensajes">
     @foreach (var mensaje in mensajes)
     {
-        <li>@mensaje</li>
+        @if (mensaje.Nombre == nombre)
+        {
+            <div id="emisor">
+                <p id="p-emisor">
+                    <b>Tú: </b>@mensaje.Contenido
+                    <br />
+                    <small>@mensaje.Hora</small>
+                </p>
+            </div>
+        }
+        else
+        {
+            <div id="receptores">
+                <p id="p-receptores">
+                    <b>@mensaje.Nombre: </b>@mensaje.Contenido
+                    <br />
+                    <small>@mensaje.Hora</small>
+                </p>
+            </div>
+        }
     }
-</ul>
-
+</div>
 <div class="element" id="footer">
     <div class="form-inline">
         <input @bind="mensaje" id="mensaje" class="form-control" placeholder="Escriba un mensaje..." />
-        <button @onclick="Enviar" id="enviar" disabled="@(!EstaConectado)">Enviar</button>
+        <button @onclick="Enviar" id="enviar" class="btn btn-outline-success" disabled="@(!EstaConectado)"><i class="oi oi-location"></i></button>
     </div>
 </div>
 
@@ -46,7 +65,14 @@
     private string mensaje;
 
     private HubConnection conexionHub;
-    private List<string> mensajes = new List<string>();
+    private List<Mensaje> mensajes = new List<Mensaje>();
+
+    public class Mensaje
+    {
+        public string Nombre { get; set; }
+        public string Contenido { get; set; }
+        public DateTime Hora { get; set; }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -56,19 +82,36 @@
 
         conexionHub.On<string, string, DateTime>("ReceiveMessage", (nombre, mensaje, hora) =>
         {
-            var nuevoMsj = $"{hora} {nombre}: {mensaje}";
-            mensajes.Add(nuevoMsj);
+            Mensaje msj = new Mensaje();
+            msj.Nombre = nombre;
+            msj.Contenido = mensaje;
+            msj.Hora = hora;
+
+            mensajes.Add(msj);
             StateHasChanged();
         });
 
         await conexionHub.StartAsync();
+
     }
 
-    Task Enviar() =>
-        conexionHub.SendAsync("SendMessage", nombre, mensaje, DateTime.Now);
+    async Task Enviar()
+    {
+        if (nombre == null)
+        {
+            var result = await JS.InvokeAsync<string>("prompt", "Ingrese nombre usuario");
+            if (result != null)
+            {
+                nombre = result;
+            }
+        }
+
+        await conexionHub.SendAsync("SendMessage", nombre, mensaje, DateTime.Now);
+        mensaje = string.Empty;
+    }
 
     public bool EstaConectado =>
-        conexionHub.State == HubConnectionState.Connected;
+    conexionHub.State == HubConnectionState.Connected;
 
     public async ValueTask DisposeAsync()
     {
