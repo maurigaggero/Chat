@@ -47,8 +47,8 @@
     background-color: darkviolet;
     border-radius: 20px;
     overflow-wrap: break-word;
-    width: 40%;
-    margin-left:60%;
+    width: 60%;
+    margin-left:40%;
 }
 
 #p-emisor {
@@ -61,8 +61,8 @@
     background-color: mediumblue;
     border-radius: 20px;
     overflow-wrap: break-word;
-    width: 40%;
-    margin-right: 60%;
+    width: 60%;
+    margin-right: 40%;
 }
 
 #p-receptores {
@@ -73,7 +73,7 @@
 
 #footer {
     position: fixed;
-    bottom: 3px;
+    bottom: 2px;
     left: 0;
     width: 100%;
     background-color: inherit;
