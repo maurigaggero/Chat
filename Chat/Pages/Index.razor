@@ -5,116 +5,134 @@
 @implements IAsyncDisposable
 
 <div class="element" id="header">
-    <div id="cont-header">
-        <div>
-            <label id="nombre"><b>@nombre</b></label>
-        </div>
-        <div>
-            @if (EstaConectado)
-            {
-                <div class="form-inline" id="estado">
-                    <div id="online" class="rounded-circle"></div>
-                    <text>Online</text>
-                </div>
-            }
-            else
-            {
-                <div class="form-inline" id="estado">
-                    <div id="offline" class="rounded-circle"></div>
-                    <text>Offline</text>
-                </div>
-            }
-        </div>
-    </div>
+	<div id="cont-header">
+		<div>
+			<label id="nombre"><b>@nombre</b></label>
+		</div>
+		<div>
+			@if (EstaConectado)
+			{
+				<div class="form-inline" id="estado">
+					<div id="online" class="rounded-circle"></div>
+					<text>Online</text>
+				</div>
+			}
+			else
+			{
+				<div class="form-inline" id="estado">
+					<div id="offline" class="rounded-circle"></div>
+					<text>Offline</text>
+				</div>
+			}
+		</div>
+	</div>
 </div>
 
 <div id="mensajes">
-    @foreach (var mensaje in mensajes)
-    {
-        @if (mensaje.Nombre == nombre)
-        {
-            <div id="emisor">
-                <p id="p-emisor">
-                    <b>Tú: </b>@mensaje.Contenido
-                    <br />
-                    <small>@mensaje.Hora</small>
-                </p>
-            </div>
-        }
-        else
-        {
-            <div id="receptores">
-                <p id="p-receptores">
-                    <b>@mensaje.Nombre: </b>@mensaje.Contenido
-                    <br />
-                    <small>@mensaje.Hora</small>
-                </p>
-            </div>
-        }
-    }
+	@foreach (var mensaje in mensajes)
+	{
+		@if (mensaje.Nombre == nombre)
+		{
+			<div id="emisor">
+				<p id="p-emisor">
+					<b>Tú: </b>@mensaje.Contenido
+					<br />
+					<small>@mensaje.Hora</small>
+				</p>
+			</div>
+		}
+		else
+		{
+			<div id="receptores">
+				<p id="p-receptores">
+					<b>@mensaje.Nombre: </b>@mensaje.Contenido
+					<br />
+					<small>@mensaje.Hora</small>
+				</p>
+			</div>
+		}
+	}
 </div>
 <div class="element" id="footer">
-    <div class="form-inline">
-        <input @bind="mensaje" id="mensaje" class="form-control" placeholder="Escriba un mensaje..." />
-        <button @onclick="Enviar" id="enviar" class="btn btn-outline-success" disabled="@(!EstaConectado)"><i class="oi oi-location"></i></button>
-    </div>
+	<div class="form-inline">
+		<input @bind="@mensaje" @onkeydown="Enter" id="mensaje" class="form-control" placeholder="Escriba un mensaje..." />
+		<button @onclick="Enviar" id="enviar" class="btn btn-warning" disabled="@(!EstaConectado)"><i class="oi oi-location"></i></button>
+	</div>
 </div>
 
 @code {
-    private string nombre;
-    private string mensaje;
+	private string nombre;
+	private string mensaje;
 
-    private HubConnection conexionHub;
-    private List<Mensaje> mensajes = new List<Mensaje>();
+	private HubConnection conexionHub;
+	private List<Mensaje> mensajes = new List<Mensaje>();
 
-    public class Mensaje
-    {
-        public string Nombre { get; set; }
-        public string Contenido { get; set; }
-        public DateTime Hora { get; set; }
-    }
+	public class Mensaje
+	{
+		public string Nombre { get; set; }
+		public string Contenido { get; set; }
+		public DateTime Hora { get; set; }
+	}
 
-    protected override async Task OnInitializedAsync()
-    {
-        conexionHub = new HubConnectionBuilder()
-        .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
-        .Build();
+	protected override async Task OnInitializedAsync()
+	{
+		conexionHub = new HubConnectionBuilder()
+		.WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
+		.Build();
 
-        conexionHub.On<string, string, DateTime>("ReceiveMessage", (nombre, mensaje, hora) =>
-        {
-            Mensaje msj = new Mensaje();
-            msj.Nombre = nombre;
-            msj.Contenido = mensaje;
-            msj.Hora = hora;
+		conexionHub.On<string, string, DateTime>("ReceiveMessage", (nombre, mensaje, hora) =>
+		{
+			Mensaje msj = new Mensaje();
+			msj.Nombre = nombre;
+			msj.Contenido = mensaje;
+			msj.Hora = hora;
 
-            mensajes.Add(msj);
-            StateHasChanged();
-        });
+			mensajes.Add(msj);
 
-        await conexionHub.StartAsync();
+			StateHasChanged();
+			JS.InvokeVoidAsync("scrollFunction");
+		});
 
-    }
+		await conexionHub.StartAsync();
+	}
 
-    async Task Enviar()
-    {
-        if (nombre == null)
-        {
-            var result = await JS.InvokeAsync<string>("prompt", "Ingrese nombre usuario");
-            if (result != null)
-            {
-                nombre = result;
-            }
-        }
+	async Task Enter(KeyboardEventArgs e)
+	{
+		if (e.Code == "Enter" || e.Code == "NumpadEnter")
+		{
+			await Enviar();
+		}
+	}
 
-        await conexionHub.SendAsync("SendMessage", nombre, mensaje, DateTime.Now);
-        mensaje = string.Empty;
-    }
 
-    public bool EstaConectado =>
-    conexionHub.State == HubConnectionState.Connected;
+	async Task Enviar()
+	{
+		if (nombre == null)
+		{
+			var result = await JS.InvokeAsync<string>("prompt", "Ingrese nombre usuario");
+			if (result != null)
+			{
+				nombre = result;
+			}
+		}
 
-    public async ValueTask DisposeAsync()
-    {
-        await conexionHub.DisposeAsync();
-    }
+		await conexionHub.SendAsync("SendMessage", nombre, mensaje, DateTime.Now);
+		mensaje = string.Empty;
+		await JS.InvokeVoidAsync("scrollFunction");
+	}
+
+	public bool EstaConectado =>
+	conexionHub.State == HubConnectionState.Connected;
+
+	public async ValueTask DisposeAsync()
+	{
+		await conexionHub.DisposeAsync();
+	}
+
 }
+
+<script>
+	function scrollFunction() {
+		window.scrollTo(0, document.body.scrollHeight);
+	}
+</script>
