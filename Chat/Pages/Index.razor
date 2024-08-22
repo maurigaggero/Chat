@@ -55,7 +55,7 @@
 </div>
 <div class="element" id="footer">
 	<div class="form-inline">
-		<input @bind="@mensaje" @onkeydown="Enter" id="mensaje" class="form-control" placeholder="Escriba un mensaje..." />
+		<input @bind="@mensaje" @onkeydown="Enter" @ref="textInput" id="mensaje" class="form-control" placeholder="Escriba un mensaje..." />
 		<button @onclick="Enviar" id="enviar" class="btn btn-warning" disabled="@(!EstaConectado)"><i class="oi oi-location"></i></button>
 	</div>
 </div>
@@ -66,6 +66,8 @@
 
 	private HubConnection conexionHub;
 	private List<Mensaje> mensajes = new List<Mensaje>();
+
+	ElementReference textInput;
 
 	public class Mensaje
 	{
@@ -118,6 +120,7 @@
 
 		await conexionHub.SendAsync("SendMessage", nombre, mensaje, DateTime.Now);
 		mensaje = string.Empty;
+		await textInput.FocusAsync();
 		await JS.InvokeVoidAsync("scrollFunction");
 	}
 
