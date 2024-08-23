@@ -118,10 +118,14 @@
 			}
 		}
 
-		await conexionHub.SendAsync("SendMessage", nombre, mensaje, DateTime.Now);
-		mensaje = string.Empty;
-		await textInput.FocusAsync();
-		await JS.InvokeVoidAsync("scrollFunction");
+		if (!string.IsNullOrEmpty(mensaje) && !string.IsNullOrWhiteSpace(mensaje))
+		{
+			await conexionHub.SendAsync("SendMessage", nombre, mensaje, DateTime.Now);
+			mensaje = string.Empty;
+			await textInput.FocusAsync();
+			await JS.InvokeVoidAsync("scrollFunction");
+		}
+		
 	}
 
 	public bool EstaConectado =>
