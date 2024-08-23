@@ -53,7 +53,7 @@
 }
 
 #p-emisor {
-    margin-left: 1rem;
+    margin-left: 2rem;
     margin-top: 0.5rem;
     text-align: left;
 }
@@ -67,7 +67,7 @@
 }
 
 #p-receptores {
-    margin-right: 1rem;
+    margin-right: 2rem;
     margin-top: 0.5rem;
     text-align: right;
 }
