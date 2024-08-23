@@ -46,9 +46,11 @@
 
 #emisor {
     background-color: darkviolet;
-    border-radius: 20px;
+    border-radius: 15px;
     overflow-wrap: break-word;
-    margin-left:52%;
+    width: fit-content;
+    max-width: 85%;
+    margin: 0 2px 0 auto;
 }
 
 #p-emisor {
@@ -61,9 +63,10 @@
 
 #receptores {
     background-color: mediumblue;
-    border-radius: 20px;
+    border-radius: 15px;
     overflow-wrap: break-word;
-    margin-right: 52%;
+    width: fit-content;
+    max-width: 85%;
 }
 
 #p-receptores {
