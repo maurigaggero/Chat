@@ -82,11 +82,13 @@
     padding: 0.7rem;
     background-color: rgb(0,0,0,0.6);
     color: white;
+    justify-content:center;
 }
 
 #mensaje {
-    width: 75%;
-    border-radius: 30px;
+    margin-left: 0.5rem;
+    width: 80%;
+    border-radius: 15px;
     background-color: inherit;
     color: white;
 }
@@ -96,7 +98,8 @@
 }
 
 #enviar {
-    margin-left: 1.5rem;
-    border-radius: 30px;
-    width: 15%;
+    position: inherit;
+    margin-left: 1rem;
+    border-radius: 15px;
+    width: 12%;
 }
