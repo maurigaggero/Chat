@@ -48,13 +48,14 @@
     background-color: darkviolet;
     border-radius: 20px;
     overflow-wrap: break-word;
-    width: 60%;
-    margin-left:40%;
+    margin-left:52%;
 }
 
 #p-emisor {
-    margin-left: 2rem;
+    margin-left: 1.2rem;
     margin-top: 0.5rem;
+    margin-right: 1.2rem;
+    margin-bottom: 0.5rem;
     text-align: left;
 }
 
@@ -62,13 +63,14 @@
     background-color: mediumblue;
     border-radius: 20px;
     overflow-wrap: break-word;
-    width: 60%;
-    margin-right: 40%;
+    margin-right: 52%;
 }
 
 #p-receptores {
-    margin-right: 2rem;
+    margin-left: 1.2rem;
     margin-top: 0.5rem;
+    margin-right: 1.2rem;
+    margin-bottom: 0.5rem;
     text-align: right;
 }
 
