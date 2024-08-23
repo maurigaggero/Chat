@@ -34,21 +34,23 @@
 		@if (mensaje.Nombre == nombre)
 		{
 			<div id="emisor">
-				<p id="p-emisor">
+				<div id="p-emisor">
 					<b>Tú: </b>@mensaje.Contenido
 					<br />
-					<small>@mensaje.Hora</small>
-				</p>
+					<p style="font-size:0.65rem">@mensaje.Hora.ToString("dd/MM/yyyy HH:mm")</p>
+				</div>
+
 			</div>
 		}
 		else
 		{
 			<div id="receptores">
-				<p id="p-receptores">
+				<div id="p-receptores">
 					<b>@mensaje.Nombre: </b>@mensaje.Contenido
 					<br />
-					<small>@mensaje.Hora</small>
-				</p>
+					<p style="font-size:0.65rem">@mensaje.Hora.ToString("dd/MM/yyyy HH:mm")</p>
+				</div>
+
 			</div>
 		}
 	}
@@ -125,7 +127,7 @@
 			await textInput.FocusAsync();
 			await JS.InvokeVoidAsync("scrollFunction");
 		}
-		
+
 	}
 
 	public bool EstaConectado =>
